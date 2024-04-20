@@ -1,15 +1,10 @@
-import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
+import { Wallet } from 'src/wallet/wallet.entity';
+import { Entity, Column, PrimaryGeneratedColumn, OneToMany, OneToOne, JoinColumn } from 'typeorm';
 
 @Entity()
 export class User {
   @PrimaryGeneratedColumn()
   id: number;
-
-//   @Column()
-//   firstName: string;
-
-//   @Column()
-//   lastName: string;
 
   @Column()
   email: string;
@@ -22,4 +17,8 @@ export class User {
 
   @Column({ default: true })
   isActive: boolean;
+
+  @JoinColumn()
+  @OneToOne(() => Wallet, wallet => wallet.id)
+  wallet: Wallet;
 }

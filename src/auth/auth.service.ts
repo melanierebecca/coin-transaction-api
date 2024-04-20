@@ -1,22 +1,30 @@
-import { Injectable, UnauthorizedException } from "@nestjs/common";
-import { UsersService } from "../users/users.service";
-import { JwtService } from "@nestjs/jwt";
-import { SignUpDto } from "src/auth/dto/sign-up.dto";
-import * as bcrypt from "bcrypt";
-import { SignInDto } from "./dto/sign-in.dto";
+import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { UsersService } from '../users/users.service';
+import { JwtService } from '@nestjs/jwt';
+import { SignUpDto } from 'src/auth/dto/sign-up.dto';
+import * as bcrypt from 'bcrypt';
+import { SignInDto } from './dto/sign-in.dto';
+import { WalletService } from 'src/wallet/wallet.service';
 const saltRoundForPassword = 10;
 
 @Injectable()
 export class AuthService {
   constructor(
     private usersService: UsersService,
-    private jwtService: JwtService
+    private walletService: WalletService,
+    private jwtService: JwtService,
   ) {}
 
   async signUp(data: SignUpDto): Promise<any> {
     const salt = bcrypt.genSaltSync(saltRoundForPassword);
     const password = bcrypt.hashSync(data.password, salt);
-    const user = await this.usersService.create({...data, password: password});
+    const wallet = await this.walletService.create();
+    console.log(wallet);
+    const user = await this.usersService.create({
+      ...data,
+      password: password,
+      wallet: wallet,
+    });
     return {
       username: user.username,
     };
@@ -28,7 +36,7 @@ export class AuthService {
     if (!isMatch) {
       throw new UnauthorizedException();
     }
-    const payload = {id:user.id, username: user.username, email: user.email};
+    const payload = { id: user.id, username: user.username, email: user.email };
     return {
       access_token: await this.jwtService.signAsync(payload),
     };
