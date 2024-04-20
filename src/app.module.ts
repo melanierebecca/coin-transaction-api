@@ -10,14 +10,11 @@ import { TypeOrmModule } from '@nestjs/typeorm';
   imports: [
     ConfigModule.forRoot({ envFilePath: '.env' }),
     TypeOrmModule.forRoot({
-      // type: 'sqlite',
       type: 'mysql',
-      host: 'localhost',
-      // port: 3306,
-      username: 'root',
+      host: process.env.DB_USER_HOST,
+      username: process.env.DB_USER_NAME,
       password: '',
-      database: 'coin',
-      // entities: [],
+      database: process.env.DB_NAME,
       synchronize: true,
       autoLoadEntities: true,
     }),
