@@ -3,17 +3,29 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Coin } from './coin.entity';
 import { AddCoinDto } from './dto/add-coin.dto';
+import { ScannerApiService } from 'src/scanner-api/scanner-api.service';
+import { Web3Service } from 'src/web3/web3.service';
 
 @Injectable()
 export class CoinsService {
   constructor(
     @InjectRepository(Coin)
     private coinRepository: Repository<Coin>,
+    private scannerAPIService: ScannerApiService,
+    private web3Service: Web3Service,
   ) {}
 
-  async create(userData: Partial<Coin>): Promise<Coin> {
-    const newCoin = this.coinRepository.create(userData);
-    return await this.coinRepository.save(newCoin);
+  async create(coinData: Partial<Coin>): Promise<any> {
+    const abi  = await this.scannerAPIService.getTokenAbi(coinData.address)
+    console.log(abi)
+    if(abi) {
+      const data = await this.web3Service.getTokenDetails({abi: abi, coinAddress: coinData.address})
+      console.log(data)
+      const newCoin = this.coinRepository.create(data);
+      const saved = await this.coinRepository.save(newCoin);
+      console.log(saved)
+      return saved
+    }
   }
 
   findAll(): Promise<Coin[]> {

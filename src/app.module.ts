@@ -7,6 +7,7 @@ import { UsersModule } from './users/users.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { CoinsModule } from './coins/coins.module';
 import { Web3Module } from './web3/web3.module';
+import { ScannerApiModule } from './scanner-api/scanner-api.module';
 
 @Module({
   imports: [
@@ -24,6 +25,7 @@ import { Web3Module } from './web3/web3.module';
     Web3Module,
     UsersModule,
     CoinsModule,
+    ScannerApiModule,
   ],
   controllers: [AppController],
   providers: [AppService],

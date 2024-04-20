@@ -16,6 +16,8 @@ export class ScannerApiService {
       } else {
         throw tokenAbiResponse.data;
       }
-    } catch (e) {}
+    } catch (e) {
+        console.log(e)
+    }
   };
 }

@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { ScannerApiService } from './scanner-api.service';
 
 @Module({
-  providers: [ScannerApiService]
+  providers: [ScannerApiService],
+  exports: [ScannerApiService]
 })
 export class ScannerApiModule {}

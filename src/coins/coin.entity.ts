@@ -16,4 +16,7 @@ export class Coin {
 
   @Column()
   symbol: string;
+
+  @Column({ type: 'text' })
+  abi: string;
 }

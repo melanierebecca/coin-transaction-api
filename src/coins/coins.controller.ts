@@ -1,4 +1,12 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Patch,
+  Post,
+} from '@nestjs/common';
 import { CoinsService } from './coin.service';
 import { AddCoinDto } from './dto/add-coin.dto';
 import { UpdateCoinDto } from './dto/update-coin.dto';
@@ -12,8 +20,8 @@ export class CoinsController {
 constructor(private readonly coinsService: CoinsService) {}
 
   @Post()
-  create(@Body() createProductDto: AddCoinDto) {
-    return this.coinsService.create(createProductDto);
+  create(@Body() createCoinDto: AddCoinDto) {
+    return this.coinsService.create(createCoinDto);
   }
 
   @Get()
@@ -27,8 +35,8 @@ constructor(private readonly coinsService: CoinsService) {}
   }
 
   @Patch(':id')
-  update(@Param('id') id: number, @Body() updateProductDto: UpdateCoinDto) {
-    return this.coinsService.findOneAndUpdate(id, updateProductDto);
+  update(@Param('id') id: number, @Body() updateCoinDto: UpdateCoinDto) {
+    return this.coinsService.findOneAndUpdate(id, updateCoinDto);
   }
 
   @Delete(':id')
