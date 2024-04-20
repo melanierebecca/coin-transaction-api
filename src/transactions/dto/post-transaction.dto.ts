@@ -14,7 +14,7 @@ export class TokenTransferBodyDTO {
 
 export class TokenTransferDTO {
   @ApiProperty({ example: 1 })
-  user: number
+  wallet: number
 
   @ApiProperty({ example: 1 })
   toAddress: string

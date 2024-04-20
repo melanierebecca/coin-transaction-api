@@ -43,6 +43,16 @@ export class Web3Service {
     return await this.web3.eth.getTransactionReceipt(transactionHash);
   }
 
+  #estimateGasFee = async (transfer: any, from: string): Promise<number> => {
+    try {
+      const gasAmount = await transfer.estimateGas({ from: from });
+      return gasAmount;
+    } catch (error) {
+      console.log(error);
+      return 30000;
+    }
+  };
+
   async getCoinBalance(
     walletAddress: string,
     coinAddress: string,
@@ -62,7 +72,7 @@ export class Web3Service {
     tokenAbi,
     tokenAddress,
   }: {
-    pk: string,
+    pk: string;
     from: string;
     to: string;
     amount: string;
@@ -70,7 +80,7 @@ export class Web3Service {
     tokenAddress: string;
   }): Promise<any> {
     try {
-      const contractABI =  JSON.parse(tokenAbi);
+      const contractABI = JSON.parse(tokenAbi);
       const contractAddress = tokenAddress;
 
       const contract = new this.web3.eth.Contract(
@@ -79,15 +89,14 @@ export class Web3Service {
         { from: from },
       );
       const decimals = await contract.methods.decimals().call();
-      console.log('decimals', decimals)
+      console.log('decimals', decimals);
       const amountHex = this.web3.utils.toHex(
         `${parseFloat(amount) * parseFloat(`1e${decimals}`)}`,
       );
-      console.log('amountHex', amountHex)
 
       const transfer = contract.methods.transfer(to, amountHex);
-      const estimateGas = await transfer.estimateGas({ from: from });
-
+      const estimateGas = await this.#estimateGasFee(transfer, from);
+      console.log(estimateGas);
       const data = transfer.encodeABI();
 
       const txObj = {
@@ -97,6 +106,7 @@ export class Web3Service {
         data: data,
         from: from,
       };
+      console.log(txObj);
       const signedTx = await this.web3.eth.accounts.signTransaction(txObj, pk);
       const res = await this.web3.eth.sendSignedTransaction(
         signedTx.rawTransaction,

@@ -12,9 +12,8 @@ export class TransactionsController {
   constructor(private readonly transactionService: TransactionsService) {}
 
   @Post('token-transfer')
-  create(@Request() req) {
-    console.log(req.user)
-    return this.transactionService.transferTokens({...req.body, user: req.user.id});
+  create(@Request() req, @Body() body: TokenTransferBodyDTO) {
+    return this.transactionService.transferTokens({...body, wallet: req.user.wallet});
   }
 
   @Get()

@@ -18,7 +18,7 @@ export class User {
   @Column({ default: true })
   isActive: boolean;
 
-  @JoinColumn()
   @OneToOne(() => Wallet, wallet => wallet.id)
+  @JoinColumn()
   wallet: Wallet;
 }

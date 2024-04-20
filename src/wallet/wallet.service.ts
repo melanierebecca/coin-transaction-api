@@ -48,12 +48,14 @@ export class WalletService {
       if (!this.currentWasm) {
         this.currentWasm = await initWasm();
       }
+      const coinType = await this.getCoinType(coin.toUpperCase());
+
       const mnemonic: string = bip39.generateMnemonic();
       const { HexCoding, HDWallet, Derivation } = this.currentWasm;
       const wallet = HDWallet.createWithMnemonic(`${mnemonic.toString()}`, '');
-      const key = wallet.getKeyForCoin(coin);
+      const key = wallet.getKeyForCoin(coinType);
       const pubKey = key.getPublicKeySecp256k1(true);
-      const address = wallet.getAddressForCoin(coin);
+      const address = wallet.getAddressForCoin(coinType);
       const testAddress = wallet.getAddressDerivation(
         coin,
         Derivation.bitcoinTestnet,
@@ -81,10 +83,10 @@ export class WalletService {
     return await this.walletRepository.save(wallet);
   }
 
-  findByUserId(user: number): Promise<Wallet | null> {
-    const  wallet = this.walletRepository.findOneBy({ user: user });
+  findById(id: number): Promise<Wallet | null> {
+    const  wallet = this.walletRepository.findOneBy({ id: id });
     if (!wallet) {
-        throw new NotFoundException(`Wallet for user ID ${user} not found`);
+        throw new NotFoundException(`Wallet for ID ${id} not found`);
       }
       return wallet;
   }

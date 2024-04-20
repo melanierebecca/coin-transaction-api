@@ -18,7 +18,7 @@ export class Wallet {
   @Column()
   xpub: string;
 
+  @OneToOne(() => User, user => user.wallet)
   @JoinColumn()
-  @OneToOne(() => User, user => user.id)
-  user: number;
+  user: User;
 }
