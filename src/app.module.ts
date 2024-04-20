@@ -6,6 +6,7 @@ import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { CoinsModule } from './coins/coins.module';
+import { Web3Module } from './web3/web3.module';
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { CoinsModule } from './coins/coins.module';
       autoLoadEntities: true,
     }),
     AuthModule,
+    Web3Module,
     UsersModule,
     CoinsModule,
   ],
