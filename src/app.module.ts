@@ -9,6 +9,7 @@ import { CoinsModule } from './coins/coins.module';
 import { Web3Module } from './web3/web3.module';
 import { ScannerApiModule } from './scanner-api/scanner-api.module';
 import { WalletModule } from './wallet/wallet.module';
+import { TransactionsModule } from './transactions/transactions.module';
 
 @Module({
   imports: [
@@ -28,6 +29,7 @@ import { WalletModule } from './wallet/wallet.module';
     CoinsModule,
     ScannerApiModule,
     WalletModule,
+    TransactionsModule
   ],
   controllers: [AppController],
   providers: [AppService],

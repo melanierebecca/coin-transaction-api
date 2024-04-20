@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { initWasm } from '@trustwallet/wallet-core';
 import * as bip39 from 'bip39';
@@ -9,10 +9,12 @@ import { Repository } from 'typeorm';
 export class WalletService {
   private currentWasm: any;
 
-constructor(@InjectRepository(Wallet)
-private walletRepository: Repository<Wallet>){
+  constructor(
+    @InjectRepository(Wallet)
+    private walletRepository: Repository<Wallet>,
+  ) {
     // this.currentWasm = await initWasm();
-}
+  }
 
   async getCoinType(coin: string): Promise<number> {
     if (!this.currentWasm) {
@@ -42,7 +44,7 @@ private walletRepository: Repository<Wallet>){
 
   async #generateWalletAddress(): Promise<WalletAddress> {
     try {
-      const coin = process.env.WALLET_COIN
+      const coin = process.env.WALLET_COIN;
       if (!this.currentWasm) {
         this.currentWasm = await initWasm();
       }
@@ -52,7 +54,10 @@ private walletRepository: Repository<Wallet>){
       const key = wallet.getKeyForCoin(coin);
       const pubKey = key.getPublicKeySecp256k1(true);
       const address = wallet.getAddressForCoin(coin);
-      const testAddress = wallet.getAddressDerivation(coin, Derivation.bitcoinTestnet);
+      const testAddress = wallet.getAddressDerivation(
+        coin,
+        Derivation.bitcoinTestnet,
+      );
       const privateKey = HexCoding.encode(key.data());
 
       const walletAddress: WalletAddress = {
@@ -70,13 +75,19 @@ private walletRepository: Repository<Wallet>){
     }
   }
   async create(): Promise<Wallet> {
-    const walletData = await this.#generateWalletAddress()
+    const walletData = await this.#generateWalletAddress();
     // TODO: encrypt key
     const wallet = this.walletRepository.create(walletData);
     return await this.walletRepository.save(wallet);
   }
 
-
+  findByUserId(user: number): Promise<Wallet | null> {
+    const  wallet = this.walletRepository.findOneBy({ user: user });
+    if (!wallet) {
+        throw new NotFoundException(`Wallet for user ID ${user} not found`);
+      }
+      return wallet;
+  }
 }
 
 interface WalletAddress {

@@ -13,6 +13,7 @@ import { Web3Module } from 'src/web3/web3.module';
     TypeOrmModule.forFeature([Coin]),
   ],
   controllers: [CoinsController],
-  providers: [CoinsService]
+  providers: [CoinsService],
+  exports: [CoinsService]
 })
 export class CoinsModule {}

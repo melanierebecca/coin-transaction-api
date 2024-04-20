@@ -1,5 +1,5 @@
  import { User } from 'src/users/user.entity';
-import { Entity, Column, PrimaryGeneratedColumn, OneToOne } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, OneToOne, JoinColumn } from 'typeorm';
 
 @Entity()
 export class Wallet {
@@ -18,6 +18,7 @@ export class Wallet {
   @Column()
   xpub: string;
 
-//   @OneToOne(() => user => user.wallet)
-//   user: User;
+  @JoinColumn()
+  @OneToOne(() => User, user => user.id)
+  user: number;
 }

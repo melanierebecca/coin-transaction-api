@@ -19,11 +19,11 @@ export class Web3Service {
   }: {
     coinAddress: string;
     abi: string;
-  }): Promise<any>  => {
+  }): Promise<any> => {
     try {
       const contractABI = JSON.parse(abi);
       const contract = new this.web3.eth.Contract(contractABI, coinAddress);
-      const decimals : BigInt = await contract.methods.decimals().call();
+      const decimals: BigInt = await contract.methods.decimals().call();
       const name = await contract.methods.name().call();
       const symbol = await contract.methods.symbol().call();
       return {
@@ -31,7 +31,7 @@ export class Web3Service {
         symbol: symbol,
         decimals: decimals.toString(),
         abi: abi,
-        address: coinAddress
+        address: coinAddress,
       };
     } catch (e) {
       console.log(e);
@@ -52,5 +52,58 @@ export class Web3Service {
     const contract = new this.web3.eth.Contract(contractABI, coinAddress);
     const balance = await contract.methods.balanceOf(walletAddress).call();
     return balance;
+  }
+
+  async transferTokens({
+    pk,
+    from,
+    to,
+    amount,
+    tokenAbi,
+    tokenAddress,
+  }: {
+    pk: string,
+    from: string;
+    to: string;
+    amount: string;
+    tokenAbi: any;
+    tokenAddress: string;
+  }): Promise<any> {
+    try {
+      const contractABI =  JSON.parse(tokenAbi);
+      const contractAddress = tokenAddress;
+
+      const contract = new this.web3.eth.Contract(
+        contractABI,
+        contractAddress,
+        { from: from },
+      );
+      const decimals = await contract.methods.decimals().call();
+      console.log('decimals', decimals)
+      const amountHex = this.web3.utils.toHex(
+        `${parseFloat(amount) * parseFloat(`1e${decimals}`)}`,
+      );
+      console.log('amountHex', amountHex)
+
+      const transfer = contract.methods.transfer(to, amountHex);
+      const estimateGas = await transfer.estimateGas({ from: from });
+
+      const data = transfer.encodeABI();
+
+      const txObj = {
+        gas: this.web3.utils.toHex(estimateGas),
+        to: contractAddress,
+        value: '0x0',
+        data: data,
+        from: from,
+      };
+      const signedTx = await this.web3.eth.accounts.signTransaction(txObj, pk);
+      const res = await this.web3.eth.sendSignedTransaction(
+        signedTx.rawTransaction,
+      );
+      return res;
+    } catch (error) {
+      throw error;
+    }
   }
 }
