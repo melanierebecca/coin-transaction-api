@@ -9,6 +9,7 @@ async function bootstrap() {
     .setDescription('Get stablecoin balance, transaction history, and simulate sending stablecoin to other addresses')
     .setVersion('1.0')
     .addTag('coins')
+    .addBearerAuth()
     .build();
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, document);
