@@ -10,7 +10,7 @@ import {
 } from "@nestjs/common";
 import { AuthGuard } from "./auth.guard";
 import { AuthService } from "./auth.service";
-import { CreateUserDto } from "src/users/dto/register-user.dto";
+import { SignUpDto } from "src/auth/dto/sign-up.dto";
 import { SignInDto } from "./dto/sign-in.dto";
 import { ApiBearerAuth } from "@nestjs/swagger";
 
@@ -26,8 +26,8 @@ export class AuthController {
 
   @HttpCode(HttpStatus.OK)
   @Post("register")
-  signUp(@Body() signUpDto: CreateUserDto) {
-    return this.authService.signUp(signUpDto);
+  signUp(@Body() SignUpDto: SignUpDto) {
+    return this.authService.signUp(SignUpDto);
   }
 
   @UseGuards(AuthGuard)
