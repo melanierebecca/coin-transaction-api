@@ -1,4 +1,4 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { UsersService } from '../users/users.service';
 import { JwtService } from '@nestjs/jwt';
 import { SignUpDto } from 'src/auth/dto/sign-up.dto';
@@ -19,7 +19,6 @@ export class AuthService {
     const salt = bcrypt.genSaltSync(saltRoundForPassword);
     const password = bcrypt.hashSync(data.password, salt);
     const wallet = await this.walletService.create();
-    console.log(wallet);
     const user = await this.usersService.create({
       ...data,
       password: password,
@@ -33,6 +32,9 @@ export class AuthService {
 
   async signIn(data: SignInDto): Promise<any> {
     const user = await this.usersService.findByUsername(data.username);
+    if(!user){
+      throw new NotFoundException("User not found")
+    }
     const isMatch = await bcrypt.compare(data.password, user.password);
     if (!isMatch) {
       throw new UnauthorizedException();
