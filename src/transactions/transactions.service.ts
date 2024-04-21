@@ -19,10 +19,8 @@ export class TransactionsService {
   ) {}
 
   async transferTokens(data: TokenTransferDTO): Promise<any> {
-    console.log(data);
     const userWallet = await this.walletService.findByAddress(data.fromAddress);
     const coin = await this.coinService.findOne(data.coin);
-    console.log(userWallet);
     const txn = await this.web3Service.transferTokens({
       pk: userWallet.privateKey,
       from: userWallet.address,
@@ -31,9 +29,14 @@ export class TransactionsService {
       tokenAbi: coin.abi,
       tokenAddress: coin.address,
     });
-    console.log('txn----->', txn)
-    // const newTxn = this.transactionRepository.create(data);
-    // return await this.transactionRepository.save(newTxn);
+    console.log('txn----->', txn);
+    const newTxn = this.transactionRepository.create({
+      from: userWallet.address,
+      to: data.toAddress,
+      amount: data.amount,
+      txhash: txn.txhash,
+    });
+    return await this.transactionRepository.save(newTxn);
   }
 
   findAll(): Promise<Transaction[]> {
