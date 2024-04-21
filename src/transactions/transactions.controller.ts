@@ -13,7 +13,7 @@ export class TransactionsController {
 
   @Post('token-transfer')
   create(@Request() req, @Body() body: TokenTransferBodyDTO) {
-    return this.transactionService.transferTokens({...body, wallet: req.user.wallet});
+    return this.transactionService.transferTokens({...body, fromAddress: req.user.address});
   }
 
   @Get()

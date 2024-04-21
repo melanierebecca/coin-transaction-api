@@ -13,8 +13,8 @@ export class TokenTransferBodyDTO {
 }
 
 export class TokenTransferDTO {
-  @ApiProperty({ example: 1 })
-  wallet: number
+  @ApiProperty({ example: '0x.....' })
+  fromAddress: string
 
   @ApiProperty({ example: 1 })
   toAddress: string

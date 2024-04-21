@@ -24,6 +24,7 @@ export class AuthService {
       ...data,
       password: password,
       wallet: wallet,
+      address: wallet.address,
     });
     return {
       username: user.username,
@@ -36,7 +37,13 @@ export class AuthService {
     if (!isMatch) {
       throw new UnauthorizedException();
     }
-    const payload = { id: user.id, username: user.username, email: user.email, wallet: user.wallet };
+    const payload = {
+      id: user.id,
+      username: user.username,
+      email: user.email,
+      wallet: user.wallet,
+      address: user.address,
+    };
     return {
       access_token: await this.jwtService.signAsync(payload),
     };

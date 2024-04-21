@@ -90,6 +90,14 @@ export class WalletService {
       }
       return wallet;
   }
+
+  findByAddress(address: string): Promise<Wallet | null> {
+    const  wallet = this.walletRepository.findOneBy({ address: address });
+    if (!wallet) {
+        throw new NotFoundException(`Wallet for address ${address} not found`);
+      }
+      return wallet;
+  }
 }
 
 interface WalletAddress {

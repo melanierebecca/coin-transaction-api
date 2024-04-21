@@ -19,8 +19,8 @@ export class Transaction {
   @Column({unique: true})
   txhash: string;
 
-//   @ManyToOne(() => User, user => user.id)
-//   sender: User;
+  @ManyToOne(() => User, user => user.id)
+  sender: User;
 
 //   @ManyToOne(() => User, user => user.id)
 //   receiver: User;
