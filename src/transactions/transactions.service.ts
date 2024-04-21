@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Transaction } from './transaction.entity';
@@ -19,24 +19,42 @@ export class TransactionsService {
   ) {}
 
   async transferTokens(data: TokenTransferDTO): Promise<any> {
-    const userWallet = await this.walletService.findByAddress(data.fromAddress);
-    const coin = await this.coinService.findOne(data.coin);
-    const txn = await this.web3Service.transferTokens({
-      pk: userWallet.privateKey,
-      from: userWallet.address,
-      to: data.toAddress,
-      amount: data.amount,
-      tokenAbi: coin.abi,
-      tokenAddress: coin.address,
-    });
-    console.log('txn----->', txn);
-    const newTxn = this.transactionRepository.create({
-      from: userWallet.address,
-      to: data.toAddress,
-      amount: data.amount,
-      txhash: txn.txhash,
-    });
-    return await this.transactionRepository.save(newTxn);
+    try {
+      const userWallet = await this.walletService.findByAddress(
+        data.fromAddress,
+      );
+      if (!userWallet) {
+        throw new NotFoundException('User wallet not found');
+      }
+
+      const coin = await this.coinService.findOne(data.coin);
+      if (!coin) {
+        throw new NotFoundException('Coin not found');
+      }
+
+      const txn = await this.web3Service.transferTokens({
+        pk: userWallet.privateKey,
+        from: userWallet.address,
+        to: data.toAddress,
+        amount: data.amount,
+        tokenAbi: coin.abi,
+        tokenAddress: coin.address,
+      });
+
+      console.log('txn----->', txn);
+
+      const newTxn = this.transactionRepository.create({
+        from: userWallet.address,
+        to: data.toAddress,
+        amount: data.amount,
+        txhash: txn.txhash,
+      });
+
+      return await this.transactionRepository.save(newTxn);
+    } catch (error) {
+      console.error('Error occurred:', error);
+      throw error;
+    }
   }
 
   findAll(): Promise<Transaction[]> {
